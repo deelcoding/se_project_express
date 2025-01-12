@@ -1,21 +1,10 @@
-const mongoose = require("mongoose");
+const router = require("express").Router();
+const { getAllUsers, getUser, createUser } = require("../controllers/users");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
-  },
+// Routes
+router.get("/", getAllUsers);
+router.get("/:userId", getUser);
+router.post("/", createUser);
 
-  avatar: {
-    type: String,
-    required: true,
-    validate: {
-      validator: (v) => validator.isURL(v),
-      message: "Invalid URL for avatar",
-    },
-  },
-});
-
-module.exports = mongoose.model("User", userSchema);
+// Export router
+module.exports = router;

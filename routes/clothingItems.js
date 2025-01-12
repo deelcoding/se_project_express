@@ -1,38 +1,27 @@
-const clothingItemSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
-  },
-  weather: {
-    type: String,
-    required: true,
-    enum: ["hot", "warm", "cold"],
-  },
-  imageUrl: {
-    type: String,
-    required: true,
-    validate: {
-      validator: (v) => validator.isURL(v),
-      message: "Invalid URL for imageURL",
-    },
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  likes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+const router = require("express").Router();
+
+const {
+  getAllClothingItems,
+  createClothingItem,
+  deleteClothingItem,
+  updateClothingItem,
+} = require("../controllers/clothingItems");
+
+// GET /items - Returns all clothing items
+router.get("/", getAllClothingItems);
+
+// POST /items - Creates a new clothing item
+router.post("/", createClothingItem);
+
+// DELETE /items/:itemId - Deletes an item by _id
+router.delete("/:itemId", deleteClothingItem);
+
+// UPDATE /items/:itemId - Updates an item by _id
+router.put("/:itemId", updateClothingItem);
+
+// Handling non-existent resources
+router.use((req, res) => {
+  res.status(500).json({ message: "Requested resource not found" });
 });
 
-module.exports = mongoose.model("ClothingItem", clothingItemSchema);
+module.exports = router;

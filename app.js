@@ -1,5 +1,7 @@
 // Import necessary modules
 const express = require("express");
+const mongoose = require("mongoose");
+const mainRouter = require("./routes");
 
 // Initialize the Express app
 const app = express();
@@ -17,5 +19,26 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
+// Use Router
+app.use(express.json());
+app.use("/", mainRouter);
+
+// Authorization
+app.use((req, res, next) => {
+  req.user = {
+    _id: "6784127d451ad46c7ce89cb8",
+  };
+  next();
+});
+
 // Connect to MongoDB server
-mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
+mongoose.set("strictQuery", false);
+mongoose
+  .connect("mongodb://127.0.0.1:27017/wtwr_db", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to DB");
+  })
+  .catch(console.error);
