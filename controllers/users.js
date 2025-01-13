@@ -1,5 +1,4 @@
 const User = require("../models/user");
-const errors = require("../utils/errors");
 
 // GET /users
 const getAllUsers = (req, res) => {
@@ -12,10 +11,9 @@ const getAllUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
-      return errors.DEFAULT.send({
-        message: "Error retrieving users",
-        error: err.message,
-      });
+      return res
+        .status(500)
+        .json({ message: "Error retrieving users", error: err.message });
     });
 };
 
@@ -32,20 +30,17 @@ const getUserById = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return errors.NOT_FOUND.send({
-          message: "Error creating user",
-          error: err.message,
-        });
+        return res
+          .status(404)
+          .json({ message: "Error creating user", error: err.message });
       } else if (err.name === "CastError") {
-        return errors.BAD_REQUEST.send({
-          message: "Error creating user",
-          error: err.message,
-        });
+        return res
+          .status(400)
+          .json({ message: "Error creating user", error: err.message });
       }
-      return errors.DEFAULT.send({
-        message: "Error creating user",
-        error: err.message,
-      });
+      return res
+        .status(404)
+        .json({ message: "Error creating user", error: err.message });
     });
 };
 
@@ -54,7 +49,7 @@ const createUser = (req, res) => {
   const { name, avatar } = req.body;
 
   if (!name) {
-    return errors.BAD_REQUEST.send({ message: "Name is required" });
+    return res.status(400).json({ message: "Name is required" });
   }
 
   console.log("Creating user with:", { name, avatar });
@@ -64,15 +59,13 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error("Error creating user:", err);
       if (err.name === "ValidationError") {
-        return errors.BAD_REQUEST.send({
-          message: "Error creating user",
-          error: err.message,
-        });
+        return res
+          .status(400)
+          .json({ message: "Error creating user", error: err.message });
       }
-      return errors.DEFAULT.send({
-        message: "Error creating user",
-        error: err.message,
-      });
+      return res
+        .status(500)
+        .json({ message: "Error creating user", error: err.message });
     });
 };
 

@@ -7,22 +7,48 @@ const getAllClothingItems = (req, res) => {
     .then((items) => res.status(200).send(items))
     .catch((err) => {
       console.error(err);
-      errors.DEFAULT.send({ message: "Error fetching clothing items", err });
+      return errors.DEFAULT.send({
+        message: "Error fetching clothing items",
+        err,
+      });
     });
 };
 
 // POST /items - Creates a new item
-const createClothingItem = (req, res) => {
-  const { name, weather, imageUrl, likeItem, dislikeItem } = req.body;
+// const createClothingItem = (req, res) => {
+//   const { name, weather, imageUrl, likeItem, dislikeItem } = req.body;
 
-  ClothingItems.create({ name, weather, imageUrl, likeItem, dislikeItem })
+//   ClothingItems.create({ name, weather, imageUrl, likeItem, dislikeItem })
+//     .then((item) => {
+//       console.log(item);
+//       res.send({ data: item });
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       if (err.name === "ValidationError") {
+//         return res
+//           .status(400)
+//           .json({ message: "Error creating item", error: err.message });
+//       }
+//       return res
+//         .status(500)
+//         .json({ message: "Error creating item", error: err.message });
+//     });
+// };
+
+const createClothingItem = (req, res) => {
+  const { name, weather, imageUrl } = req.body;
+  ClothingItems
+    .create({ name, weather, imageUrl, owner: req.user._Id })
     .then((item) => {
-      console.log(item);
       res.send({ data: item });
     })
     .catch((err) => {
       console.error(err);
-      errors.DEFAULT.send({ message: err.message });
+      if (err.name === "ValidationError") {
+        return errors.BAD_REQUEST.send({ message: err.message });
+      }
+      return errors.DEFAULT.send({ message: err.message });
     });
 };
 
@@ -36,7 +62,10 @@ const deleteClothingItem = (req, res) => {
     .then((item) => res.status(204).send({}))
     .catch((err) => {
       console.error(err);
-      errors.DEFAULT.send({ message: "Error deleting clothing item", err });
+      return errors.DEFAULT.send({
+        message: "Error deleting clothing item",
+        err,
+      });
     });
 };
 
@@ -50,7 +79,10 @@ const updateClothingItem = (req, res) => {
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
       console.error(err);
-      errors.DEFAULT.send({ message: "Error updating clothing item", err });
+      return errors.DEFAULT.send({
+        message: "Error updating clothing item",
+        err,
+      });
     });
 };
 
@@ -72,7 +104,7 @@ const likeItem = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        errors.BAD_REQUEST.send({ message: "Invalid item ID" });
+        return errors.BAD_REQUEST.send({ message: "Invalid item ID" });
       } else {
         next(err);
       }
@@ -96,7 +128,7 @@ const dislikeItem = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        errors.BAD_REQUEST.send({ message: "Invalid item ID" });
+        return errors.BAD_REQUEST.send({ message: "Invalid item ID" });
       } else {
         next(err);
       }
