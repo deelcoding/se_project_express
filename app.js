@@ -1,7 +1,7 @@
 // Import necessary modules
 const express = require("express");
 const mongoose = require("mongoose");
-const mainRouter = require("./routes");
+// const mainRouter = require("./routes");
 
 // Initialize the Express app
 const app = express();
@@ -20,6 +20,7 @@ app.listen(PORT, () => {
 });
 
 // Use Router
+const routes = require("./routes");
 app.use(express.json());
 
 // Authorization
@@ -30,7 +31,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/", mainRouter);
+// Routes
+app.use(routes);
 
 // Connect to MongoDB server
 mongoose.set("strictQuery", false);

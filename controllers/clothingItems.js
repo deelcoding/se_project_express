@@ -1,4 +1,4 @@
-const ClothingItems = require("../models/clothingItems");
+const { ClothingItems } = require("../models/clothingItems");
 const errors = require("../utils/errors");
 
 // GET /items - Returns all clothing items
@@ -18,7 +18,17 @@ const getAllClothingItems = (req, res) => {
 // const createClothingItem = (req, res) => {
 //   const { name, weather, imageUrl, likeItem, dislikeItem } = req.body;
 
-//   ClothingItems.create({ name, weather, imageUrl, likeItem, dislikeItem })
+//   // Add the owner field from the authenticated user
+//   const owner = req.user._id;
+
+//   ClothingItems.create({
+//     name,
+//     weather,
+//     imageUrl,
+//     likeItem,
+//     dislikeItem,
+//     owner,
+//   })
 //     .then((item) => {
 //       console.log(item);
 //       res.send({ data: item });
@@ -37,18 +47,16 @@ const getAllClothingItems = (req, res) => {
 // };
 
 const createClothingItem = (req, res) => {
+  // console.log(req);
+  // console.log(req.body);
   const { name, weather, imageUrl } = req.body;
-  ClothingItems
-    .create({ name, weather, imageUrl, owner: req.user._Id })
+  ClothingItems.create({ name, weather, imageUrl, owner: req.user._Id })
     .then((item) => {
+      console.log(item);
       res.send({ data: item });
     })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return errors.BAD_REQUEST.send({ message: err.message });
-      }
-      return errors.DEFAULT.send({ message: err.message });
+      res.status(500).send({ message: "Error from createClothingItem", err });
     });
 };
 
@@ -104,7 +112,7 @@ const likeItem = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return errors.BAD_REQUEST.send({ message: "Invalid item ID" });
+        return res.status(400).send({ message: "Invalid item ID" });
       } else {
         next(err);
       }

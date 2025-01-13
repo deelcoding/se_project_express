@@ -17,9 +17,7 @@ const clothingItemSchema = new mongoose.Schema({
     type: String,
     required: [true, "The URL field is required"],
     validate: {
-      validator(value) {
-        return validator.isURL(value);
-      },
+      validator: (value) => validator.isURL(value),
       message: "You must enter a valid URL",
     },
   },
@@ -30,7 +28,8 @@ const clothingItemSchema = new mongoose.Schema({
   },
   likes: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Array,
+      default: [],
       ref: "User",
     },
   ],
@@ -42,4 +41,4 @@ const clothingItemSchema = new mongoose.Schema({
 
 const ClothingItems = mongoose.model("ClothingItem", clothingItemSchema);
 
-module.exports = ClothingItems;
+module.exports = { ClothingItems };
