@@ -1,40 +1,28 @@
-const ClothingItem = require("../models/clothingItems");
+const ClothingItems = require("../models/clothingItems");
+const errors = require("../utils/errors");
 
 // GET /items - Returns all clothing items
 const getAllClothingItems = (req, res) => {
-  ClothingItem.find({})
-    .orFail()
+  ClothingItems.find({})
     .then((items) => res.status(200).send(items))
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ message: "Error fetching clothing items", error });
+    .catch((err) => {
+      console.error(err);
+      errors.DEFAULT.send({ message: "Error fetching clothing items", err });
     });
 };
 
 // POST /items - Creates a new item
 const createClothingItem = (req, res) => {
-  const { name, weather, imageUrl } = req.body;
+  const { name, weather, imageUrl, likeItem, dislikeItem } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl })
-    // .orFail()
+  ClothingItems.create({ name, weather, imageUrl, likeItem, dislikeItem })
     .then((item) => {
       console.log(item);
       res.send({ data: item });
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(404)
-          .json({ message: "Error creating item", error: err.message });
-      } else if (err.name === "CastError") {
-        return res
-          .status(400)
-          .json({ message: "Error creating item", error: err.message });
-      }
-      return res
-        .status(500)
-        .json({ message: "Error creating clothing item", error: err.message });
+      errors.DEFAULT.send({ message: err.message });
     });
 };
 
@@ -43,26 +31,75 @@ const deleteClothingItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItems.findByIdAndDelete(itemId)
     .orFail()
     .then((item) => res.status(204).send({}))
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ message: "Error deleting clothing item", error });
+    .catch((err) => {
+      console.error(err);
+      errors.DEFAULT.send({ message: "Error deleting clothing item", err });
     });
 };
 
 // Update items
 const updateClothingItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
-  console.log(itemId, imageURL);
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
+  const { imageUrl } = req.body;
+  console.log(itemId, imageUrl);
+  ClothingItems.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
-    .then((item) => res.status(200).sent({ data: item }))
-    .catch((error) => {
-      console.error(error);
-      res.status(500).json({ message: "Error updating clothing item", error });
+    .then((item) => res.status(200).send({ data: item }))
+    .catch((err) => {
+      console.error(err);
+      errors.DEFAULT.send({ message: "Error updating clothing item", err });
+    });
+};
+
+const likeItem = (req, res, next) => {
+  const userId = req.user._id;
+  const itemId = req.params.itemId;
+
+  ClothingItems.findByIdAndUpdate(
+    itemId,
+    { $addToSet: { likes: userId } }, // Add user ID if not already in the array
+    { new: true } // Return the updated document
+  )
+    .then((updatedItem) => {
+      if (!updatedItem) {
+        return errors.NOT_FOUND.send({ message: "Item not found" });
+      } else {
+        return res.status(200).send(updatedItem);
+      }
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        errors.BAD_REQUEST.send({ message: "Invalid item ID" });
+      } else {
+        next(err);
+      }
+    });
+};
+
+const dislikeItem = (req, res, next) => {
+  const userId = req.user._id;
+  const itemId = req.params.itemId;
+
+  ClothingItems.findByIdAndUpdate(
+    itemId,
+    { $pull: { likes: userId } },
+    { new: true }
+  )
+    .then((updatedItem) => {
+      if (!updatedItem) {
+        return errors.NOT_FOUND.send({ message: "Item not found" });
+      }
+      res.status(200).send(updatedItem);
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        errors.BAD_REQUEST.send({ message: "Invalid item ID" });
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -71,4 +108,6 @@ module.exports = {
   createClothingItem,
   deleteClothingItem,
   updateClothingItem,
+  likeItem,
+  dislikeItem,
 };

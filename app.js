@@ -21,7 +21,6 @@ app.listen(PORT, () => {
 
 // Use Router
 app.use(express.json());
-app.use("/", mainRouter);
 
 // Authorization
 app.use((req, res, next) => {
@@ -30,6 +29,8 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+app.use("/", mainRouter);
 
 // Connect to MongoDB server
 mongoose.set("strictQuery", false);

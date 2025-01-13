@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const errors = require("../utils/errors");
 
 // GET /users
 const getAllUsers = (req, res) => {
@@ -11,14 +12,15 @@ const getAllUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
-      return res
-        .status(500)
-        .json({ message: "Error retrieving users", error: err.message });
+      return errors.DEFAULT.send({
+        message: "Error retrieving users",
+        error: err.message,
+      });
     });
 };
 
 // GET /users by ID
-const getUser = (req, res) => {
+const getUserById = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
@@ -30,17 +32,20 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(404)
-          .json({ message: "Error creating user", error: err.message });
+        return errors.NOT_FOUND.send({
+          message: "Error creating user",
+          error: err.message,
+        });
       } else if (err.name === "CastError") {
-        return res
-          .status(400)
-          .json({ message: "Error creating user", error: err.message });
+        return errors.BAD_REQUEST.send({
+          message: "Error creating user",
+          error: err.message,
+        });
       }
-      return res
-        .status(500)
-        .json({ message: "Error creating user", error: err.message });
+      return errors.DEFAULT.send({
+        message: "Error creating user",
+        error: err.message,
+      });
     });
 };
 
@@ -49,7 +54,7 @@ const createUser = (req, res) => {
   const { name, avatar } = req.body;
 
   if (!name) {
-    return res.status(400).json({ message: "Name is required" });
+    return errors.BAD_REQUEST.send({ message: "Name is required" });
   }
 
   console.log("Creating user with:", { name, avatar });
@@ -59,15 +64,17 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error("Error creating user:", err);
       if (err.name === "ValidationError") {
-        return res
-          .status(400)
-          .json({ message: "Error creating user", error: err.message });
+        return errors.BAD_REQUEST.send({
+          message: "Error creating user",
+          error: err.message,
+        });
       }
-      return res
-        .status(500)
-        .json({ message: "Error creating user", error: err.message });
+      return errors.DEFAULT.send({
+        message: "Error creating user",
+        error: err.message,
+      });
     });
 };
 
 // Export controllers
-module.exports = { getAllUsers, getUser, createUser };
+module.exports = { getAllUsers, getUserById, createUser };

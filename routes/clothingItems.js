@@ -5,6 +5,8 @@ const {
   createClothingItem,
   deleteClothingItem,
   updateClothingItem,
+  likeItem,
+  dislikeItem,
 } = require("../controllers/clothingItems");
 
 // GET /items - Returns all clothing items
@@ -19,9 +21,8 @@ router.delete("/:itemId", deleteClothingItem);
 // UPDATE /items/:itemId - Updates an item by _id
 router.put("/:itemId", updateClothingItem);
 
-// Handling non-existent resources
-router.use((req, res) => {
-  res.status(500).json({ message: "Requested resource not found" });
-});
+// Add and Delete Likes
+router.put("/:itemId/likes", likeItem);
+router.delete("/:itemId/likes", dislikeItem);
 
 module.exports = router;
