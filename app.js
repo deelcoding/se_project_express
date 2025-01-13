@@ -2,6 +2,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 // const mainRouter = require("./routes");
+const {errors} = require("./utils/errors")
 
 // Initialize the Express app
 const app = express();
@@ -19,17 +20,17 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-// Use Router
-const routes = require("./routes");
-app.use(express.json());
-
 // Authorization
 app.use((req, res, next) => {
   req.user = {
-    _id: "6784127d451ad46c7ce89cb8",
+    _id: "678441f62227b913f6f85ea7",
   };
   next();
 });
+
+// Use Router
+const routes = require("./routes");
+app.use(express.json());
 
 // Routes
 app.use(routes);
