@@ -2,7 +2,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 // const mainRouter = require("./routes");
-const {errors} = require("./utils/errors")
 
 // Initialize the Express app
 const app = express();
@@ -11,7 +10,7 @@ const app = express();
 const { PORT = 3001 } = process.env;
 
 // Basic route for testing
-app.get("/", (req, res) => {
+app.get("/", (res) => {
   res.send("Server is running!");
 });
 
@@ -30,6 +29,7 @@ app.use((req, res, next) => {
 
 // Use Router
 const routes = require("./routes");
+
 app.use(express.json());
 
 // Routes

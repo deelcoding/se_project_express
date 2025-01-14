@@ -31,7 +31,7 @@ const createClothingItem = (req, res) => {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Error creating item", err });
-      } else if (err.name === "CastError") {
+      } if (err.name === "CastError") {
         return res
           .status(NOT_FOUND)
           .send({ message: "Error creating item", err });
@@ -47,14 +47,14 @@ const deleteClothingItem = (req, res) => {
   console.log(itemId);
   ClothingItems.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(200).send({}))
+    .then(() => res.status(200).send({}))
     .catch((err) => {
       console.error(err);
-      /*if (err.name === "ValidationError") {
+      /* if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Error deleting item", err });
-      } else*/
+      } else */
       if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
@@ -85,7 +85,7 @@ const updateClothingItem = (req, res) => {
 
 const likeItem = (req, res, next) => {
   const userId = req.user._id;
-  const itemId = req.params.itemId;
+  const {itemId} = req.params;
 
   ClothingItems.findByIdAndUpdate(
     itemId,
@@ -95,22 +95,22 @@ const likeItem = (req, res, next) => {
     .then((updatedItem) => {
       if (!updatedItem) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
-      } else {
-        return res.status(200).send(updatedItem);
       }
+        return res.status(200).send(updatedItem);
+
     })
     .catch((err) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
-      } else {
+      } 
         next(err);
-      }
+      
     });
 };
 
 const dislikeItem = (req, res, next) => {
   const userId = req.user._id;
-  const itemId = req.params.itemId;
+  const {itemId} = req.params;
 
   ClothingItems.findByIdAndUpdate(
     itemId,
@@ -126,9 +126,9 @@ const dislikeItem = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
-      } else {
+      } 
         next(err);
-      }
+      
     });
 };
 
