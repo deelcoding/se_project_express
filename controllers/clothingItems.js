@@ -103,7 +103,7 @@ const likeItem = (req, res, next) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -126,7 +126,7 @@ const dislikeItem = (req, res, next) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      next(err);
+      return next(err);
     });
 };
 
