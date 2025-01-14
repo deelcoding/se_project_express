@@ -31,7 +31,8 @@ const createClothingItem = (req, res) => {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Error creating item", err });
-      } if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(NOT_FOUND)
           .send({ message: "Error creating item", err });
@@ -85,7 +86,7 @@ const updateClothingItem = (req, res) => {
 
 const likeItem = (req, res, next) => {
   const userId = req.user._id;
-  const {itemId} = req.params;
+  const { itemId } = req.params;
 
   ClothingItems.findByIdAndUpdate(
     itemId,
@@ -96,21 +97,19 @@ const likeItem = (req, res, next) => {
       if (!updatedItem) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-        return res.status(200).send(updatedItem);
-
+      return res.status(200).send(updatedItem);
     })
     .catch((err) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
-      } 
-        next(err);
-      
+      }
+      next(err);
     });
 };
 
 const dislikeItem = (req, res, next) => {
   const userId = req.user._id;
-  const {itemId} = req.params;
+  const { itemId } = req.params;
 
   ClothingItems.findByIdAndUpdate(
     itemId,
@@ -121,14 +120,13 @@ const dislikeItem = (req, res, next) => {
       if (!updatedItem) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-      res.status(200).send(updatedItem);
+      return res.status(200).send(updatedItem);
     })
     .catch((err) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
-      } 
-        next(err);
-      
+      }
+      next(err);
     });
 };
 
