@@ -34,7 +34,8 @@ const getUserById = (req, res) => {
         return res
           .status(NOT_FOUND)
           .send({ message: "Error creating user", error: err.message });
-      } if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Error creating user", error: err.message });
@@ -55,7 +56,7 @@ const createUser = (req, res) => {
 
   console.log("Creating user with:", { name, avatar });
 
-  User.create({ name, avatar })
+  return User.create({ name, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error("Error creating user:", err);
