@@ -43,31 +43,15 @@ const deleteClothingItem = (req, res) => {
     .then(() => res.send({}))
     .catch((err) => {
       console.error(err);
-      // if (err.name === "CastError") {
-      //   return res.status(SERVER_ERROR).send({ message: "Error deleting item" });
-      // }
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Error deleting item" });
+      }
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND).send({ message: "Error deleting item" });
       }
       return res.status(SERVER_ERROR).send({ message: "Error deleting item" });
     });
 };
-
-// Update items
-// const updateClothingItem = (req, res) => {
-//   const { itemId } = req.params;
-//   const { imageUrl } = req.body;
-//   console.log(itemId, imageUrl);
-//   ClothingItems.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-//     .orFail()
-//     .then((item) => res.send({ data: item }))
-//     .catch((err) => {
-//       console.error(err);
-//       return res.status(SERVER_ERROR).send({
-//         message: "Error updating clothing item",
-//       });
-//     });
-// };
 
 const likeItem = (req, res) => {
   const userId = req.user._id;
