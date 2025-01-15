@@ -19,7 +19,7 @@ router.post("/", createClothingItem);
 router.delete("/:itemId", deleteClothingItem);
 
 // UPDATE /items/:itemId - Updates an item by _id
-router.put("/:itemId", updateClothingItem);
+// router.put("/:itemId", updateClothingItem);
 
 // Add and Delete Likes
 router.put("/:itemId/likes", likeItem);

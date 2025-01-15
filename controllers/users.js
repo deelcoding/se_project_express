@@ -4,17 +4,12 @@ const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require("../utils/errors");
 // GET /users
 const getAllUsers = (req, res) => {
   User.find({})
-    .orFail(() => {
-      const error = new Error("No Users Found");
-      error.name = "NotFoundError";
-      throw error;
-    })
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
       return res
         .status(SERVER_ERROR)
-        .send({ message: "Error retrieving users", error: err.message });
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -27,22 +22,16 @@ const getUserById = (req, res) => {
       error.name = "NotFoundError";
       throw error;
     })
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Error creating user", error: err.message });
+      if (err.name === "NotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "Error creating user" });
       }
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Error creating user", error: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Error creating user" });
       }
-      return res
-        .status(NOT_FOUND)
-        .send({ message: "Error creating user", error: err.message });
+      return res.status(SERVER_ERROR).send({ message: "Error creating user" });
     });
 };
 
@@ -57,17 +46,13 @@ const createUser = (req, res) => {
   console.log("Creating user with:", { name, avatar });
 
   return User.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
-      console.error("Error creating user:", err);
+      console.error("Error creating user");
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Error creating user", error: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Error creating user" });
       }
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "Error creating user", error: err.message });
+      return res.status(SERVER_ERROR).send({ message: "An error has occurred on the server." });
     });
 };
 
