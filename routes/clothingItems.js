@@ -4,7 +4,7 @@ const {
   getAllClothingItems,
   createClothingItem,
   deleteClothingItem,
-  updateClothingItem,
+  /* updateClothingItem, */
   likeItem,
   dislikeItem,
 } = require("../controllers/clothingItems");

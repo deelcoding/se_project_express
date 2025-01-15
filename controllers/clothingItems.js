@@ -123,7 +123,7 @@ module.exports = {
   getAllClothingItems,
   createClothingItem,
   deleteClothingItem,
-  updateClothingItem,
+  /* updateClothingItem, */
   likeItem,
   dislikeItem,
 };
