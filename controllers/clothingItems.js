@@ -78,7 +78,7 @@ const likeItem = (req, res) => {
     });
 };
 
-const dislikeItem = (req, res, next) => {
+const dislikeItem = (req, res) => {
   const userId = req.user._id;
   const { itemId } = req.params;
 
