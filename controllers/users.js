@@ -27,11 +27,7 @@ const getCurrentUser = (req, res) => {
   const userId = req.user._id;
 
   User.findById(userId)
-    .orFail(() => {
-      const error = new Error({ message: "User not found" });
-      error.name = "NotFoundError";
-      throw error;
-    })
+    .orFail(new Error("Not Found"))
     .then((user) => res.send(user))
     .catch((err) => {
       console.error(err);
@@ -55,43 +51,39 @@ const getCurrentUser = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res
-      .status(BAD_REQUEST)
-      .send({ message: "Name, email, and password are required" });
-  }
-
-  bcrypt
-    .hash(password, 10)
-    .then((hashedPassword) => {
-      return User.create({
-        name,
-        avatar,
-        email,
-        password: hashedPassword,
-      });
-    })
+  User.findOne({ email })
     .then((user) => {
-      // Exclude password before sending response
-      const userObject = user.toObject();
-      delete userObject.password;
-
-      res.send(userObject);
-    })
-    .catch((err) => {
-      console.error("Error creating user:", err);
-
-      if (err.code === 11000) {
-        return res.status(CONFLICT).send({ message: "Email already exists" });
+      if (user) {
+        const error = new Error("This email is already registered");
+        error.name = "MongoError";
+        error.code = 11000;
+        throw error;
       }
 
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
+    .then((newUser) => {
+      res.send({
+        name: newUser.name,
+        email: newUser.email,
+        _id: newUser._id,
+        avatar: newUser.avatar,
+      });
+    })
+    .catch((err) => {
+      console.error(err);
       if (err.name === "ValidationError") {
         return res.status(BAD_REQUEST).send({ message: err.message });
       }
-
-      res
+      if (err.name === "MongoError" && err.code === 11000) {
+        return res
+          .status(CONFLICT)
+          .send({ message: "This email is already registered" });
+      }
+      return res
         .status(SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -114,23 +106,25 @@ const updateUser = (req, res) => {
       runValidators: true, // Run validation rules defined in the schema
     }
   )
-    // .orFail(() => {
-    //   const error = new Error("User not found");
-    //   error.name = "NotFoundError";
-    //   throw error;
-    // })
-    .then((updatedUser) => res.send(updatedUser))
+    .orFail(() => {
+      const error = new Error("User not found");
+      error.name = "NotFoundError";
+      throw error;
+    })
+    .then((updatedUser) =>
+      res.send({ name: updatedUser.name, avatar: updatedUser.avatar })
+    )
     .catch((err) => {
       console.error("Error updating user:", err);
-
-      if (err.name === "NotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
-      }
 
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Validation failed", details: err.message });
+      }
+
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST).send({message: "Invalid ID"})
       }
 
       return res
