@@ -27,7 +27,7 @@ app.listen(PORT, () => {
 });
 
 // Use Router
-const routes = require("./routes");
+const routes = require("./routes/index");
 
 app.use(express.json());
 app.post("/signin", login);

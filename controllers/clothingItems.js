@@ -55,7 +55,7 @@ const deleteClothingItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
-      if (err.name === "DocumentNotFoundError") {
+      if (err.name === "DocumentNotFoundError" || "TypeError") {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
       return res.status(SERVER_ERROR).send({ message: "Error deleting item" });

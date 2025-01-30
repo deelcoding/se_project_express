@@ -28,7 +28,7 @@ const getCurrentUser = (req, res) => {
 
   User.findById(userId)
     .orFail(() => {
-      const error = new Error("User not found");
+      const error = new Error({ message: "User not found" });
       error.name = "NotFoundError";
       throw error;
     })
@@ -41,6 +41,9 @@ const getCurrentUser = (req, res) => {
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid user ID" });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       return res
         .status(SERVER_ERROR)
@@ -61,7 +64,12 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hashedPassword) => {
-      return User.create({ name, avatar, email, password: hashedPassword });
+      return User.create({
+        name,
+        avatar,
+        email,
+        password: hashedPassword,
+      });
     })
     .then((user) => {
       // Exclude password before sending response
@@ -106,11 +114,11 @@ const updateUser = (req, res) => {
       runValidators: true, // Run validation rules defined in the schema
     }
   )
-    .orFail(() => {
-      const error = new Error("User not found");
-      error.name = "NotFoundError";
-      throw error;
-    })
+    // .orFail(() => {
+    //   const error = new Error("User not found");
+    //   error.name = "NotFoundError";
+    //   throw error;
+    // })
     .then((updatedUser) => res.send(updatedUser))
     .catch((err) => {
       console.error("Error updating user:", err);
@@ -137,7 +145,7 @@ const login = (req, res) => {
 
   if (!email || !password) {
     return res
-      .status(UNAUTHORIZED)
+      .status(BAD_REQUEST)
       .send({ message: "Email and password are required" });
   }
 
