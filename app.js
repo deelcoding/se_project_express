@@ -2,8 +2,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const routes = require("./routes/index");
 const helmet = require("helmet");
+const routes = require("./routes/index");
 
 // Initialize the Express app
 const app = express();

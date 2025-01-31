@@ -13,7 +13,7 @@ const auth = (req, res, next) => {
       return res.status(UNAUTHORIZED).send({ message: "Unauthorized" });
     }
     req.user = payload;
-    next();
+    return next();
   });
 
   return null;
