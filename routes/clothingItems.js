@@ -1,5 +1,5 @@
 const router = require("express").Router();
-
+const auth = require("../middleware/auth");
 const {
   getAllClothingItems,
   createClothingItem,
@@ -13,7 +13,7 @@ const {
 router.get("/", getAllClothingItems);
 
 // POST /items - Creates a new clothing item
-router.post("/", createClothingItem);
+router.post("/", auth, createClothingItem);
 
 // DELETE /items/:itemId - Deletes an item by _id
 router.delete("/:itemId", deleteClothingItem);
