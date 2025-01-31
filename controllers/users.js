@@ -10,18 +10,6 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-// GET /users
-const getAllUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
-    });
-};
-
 // GET current user
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
@@ -32,14 +20,11 @@ const getCurrentUser = (req, res) => {
     .catch((err) => {
       console.error(err);
 
-      if (err.name === "NotFoundError") {
+      if (err.name === "Not Found") {
         return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid user ID" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       return res
         .status(SERVER_ERROR)
@@ -117,6 +102,10 @@ const updateUser = (req, res) => {
     .catch((err) => {
       console.error("Error updating user:", err);
 
+      if (err.name === "NotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "User not found" });
+      }
+
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
@@ -124,7 +113,7 @@ const updateUser = (req, res) => {
       }
 
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST).send({message: "Invalid ID"})
+        return res.status(BAD_REQUEST).send({ message: "Invalid ID" });
       }
 
       return res
@@ -152,9 +141,18 @@ const login = (req, res) => {
     })
     .catch((err) => {
       console.error("Authentication error:", err.message);
-      res.status(UNAUTHORIZED).send({ message: "Incorrect email or password" });
+
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Incorrect email or password" });
+      }
+
+      return res
+        .status(SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
 // Export controllers
-module.exports = { getAllUsers, getCurrentUser, createUser, login, updateUser };
+module.exports = { getCurrentUser, createUser, login, updateUser };

@@ -16,11 +16,6 @@ app.use(express.json());
 // Routes
 app.use("/", routes);
 
-// Protected routes
-app.get("/protected-data", (req, res) => {
-  res.send({ message: `Hello, user ${req.user._id}! You are authorized.` });
-});
-
 // Connect to MongoDB server
 mongoose.set("strictQuery", false);
 mongoose

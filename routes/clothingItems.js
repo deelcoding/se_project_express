@@ -12,17 +12,19 @@ const {
 // GET /items - Returns all clothing items
 router.get("/", getAllClothingItems);
 
+router.use(auth);
+
 // POST /items - Creates a new clothing item
 router.post("/", auth, createClothingItem);
 
 // DELETE /items/:itemId - Deletes an item by _id
-router.delete("/:itemId", deleteClothingItem);
+router.delete("/:itemId", auth, deleteClothingItem);
 
 // UPDATE /items/:itemId - Updates an item by _id
 // router.put("/:itemId", updateClothingItem);
 
 // Add and Delete Likes
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", dislikeItem);
+router.put("/:itemId/likes", auth, likeItem);
+router.delete("/:itemId/likes", auth, dislikeItem);
 
 module.exports = router;
