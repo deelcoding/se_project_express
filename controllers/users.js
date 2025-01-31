@@ -98,7 +98,7 @@ const updateUser = (req, res) => {
       .send({ message: "At least one field (name or avatar) is required" });
   }
 
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     userId,
     { name, avatar }, // Update only the name and avatar fields
     {
@@ -143,7 +143,7 @@ const login = (req, res) => {
       .send({ message: "Email and password are required" });
   }
 
-  User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
