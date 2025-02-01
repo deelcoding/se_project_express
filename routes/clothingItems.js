@@ -12,8 +12,6 @@ const {
 // GET /items - Returns all clothing items
 router.get("/", getAllClothingItems);
 
-router.use(auth);
-
 // POST /items - Creates a new clothing item
 router.post("/", auth, createClothingItem);
 
