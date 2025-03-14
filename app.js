@@ -14,7 +14,7 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 // Routes
-app.use("/", routes);
+app.use("/api", routes);
 
 // Connect to MongoDB server
 mongoose.set("strictQuery", false);

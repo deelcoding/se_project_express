@@ -5,6 +5,7 @@ const clothingRouter = require("./clothingItems");
 const { login, createUser } = require("../controllers/users");
 // const auth = require("../middlewares/auth");
 
+console.log("Routes initialized");
 router.post("/signin", login);
 router.post("/signup", createUser);
 
