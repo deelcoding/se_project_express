@@ -5,6 +5,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
+const { errors } = require("celebrate");
 
 // Initialize the Express app
 const app = express();
@@ -33,5 +34,7 @@ mongoose
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+app.use(errors());
 
 app.use(errorHandler);
