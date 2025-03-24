@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
 const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 // Initialize the Express app
 const app = express();
@@ -15,6 +16,8 @@ const { PORT = 3001 } = process.env;
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+
+app.use(requestLogger);
 // Routes
 app.use("/", routes);
 
@@ -34,6 +37,8 @@ mongoose
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
