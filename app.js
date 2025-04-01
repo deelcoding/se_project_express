@@ -7,6 +7,7 @@ const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+require("dotenv").config();
 
 // Initialize the Express app
 const app = express();
