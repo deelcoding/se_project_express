@@ -14,6 +14,12 @@ const app = express();
 // Set the port from the environment or default to 3001
 const { PORT = 3001 } = process.env;
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
