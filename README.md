@@ -8,7 +8,7 @@ In this project, the technologies used are Express.JS, MongoDB, and then using P
 
 ## URL for the server
 
-wtwrdeelcoding.crabdance.com
+api.wtwrdeelcoding.crabdance.com
 
 ## Running the Project
 
