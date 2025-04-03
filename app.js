@@ -1,4 +1,5 @@
 // Import necessary modules
+require("dotenv").config();
 const { errors } = require("celebrate");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -7,7 +8,6 @@ const helmet = require("helmet");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-require("dotenv").config();
 
 // Initialize the Express app
 const app = express();
