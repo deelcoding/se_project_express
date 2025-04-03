@@ -8,7 +8,7 @@ const UnauthorizedError = require("../custom_errors/UnauthorizedError");
 const { JWT_SECRET } = require("../utils/config");
 
 // GET current user
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id;
 
   User.findById(userId)
@@ -28,7 +28,7 @@ const getCurrentUser = (req, res) => {
 };
 
 // POST users
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   User.findOne({ email })
@@ -65,7 +65,7 @@ const createUser = (req, res) => {
 };
 
 // PATCH /users/me — update profile
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
   const userId = req.user._id; // Retrieve the current user's ID from the auth middleware
 
@@ -111,7 +111,7 @@ const updateUser = (req, res) => {
 };
 
 // POST /login
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {

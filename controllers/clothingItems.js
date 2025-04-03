@@ -4,22 +4,16 @@ const NotFoundError = require("../custom_errors/NotFoundError");
 const { ClothingItems } = require("../models/clothingItems");
 
 // GET /items - Returns all clothing items
-const getAllClothingItems = (req, res) => {
+const getAllClothingItems = (req, res, next) => {
   ClothingItems.find({})
     .then((items) => res.send(items))
     .catch((err) => {
-      console.error(err);
-      const { statusCode = 500, message } = err;
-      res.status(statusCode).send({
-        // check the status and display a message based on it
-        message:
-          statusCode === 500 ? "An error occurred on the server" : message,
-      });
+      next(err);
     });
 };
 
 // POST /items - Creates a new item
-const createClothingItem = (req, res) => {
+const createClothingItem = (req, res, next) => {
   console.log(req.user._id); // Access the hardcoded user ID
 
   const { name, weather, imageUrl } = req.body;
@@ -40,7 +34,7 @@ const createClothingItem = (req, res) => {
 };
 
 // DELETE /items/:itemId - Deletes an item by _id
-const deleteClothingItem = (req, res) => {
+const deleteClothingItem = (req, res, next) => {
   const { itemId } = req.params;
   const userId = req.user._id; // Logged-in user's ID
 
@@ -69,7 +63,7 @@ const deleteClothingItem = (req, res) => {
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
 
@@ -93,7 +87,7 @@ const likeItem = (req, res) => {
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
 

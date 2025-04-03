@@ -1,11 +1,11 @@
 // Import necessary modules
+const { errors } = require("celebrate");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
-const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 require("dotenv").config();
 
