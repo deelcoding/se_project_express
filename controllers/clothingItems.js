@@ -43,7 +43,7 @@ const deleteClothingItem = (req, res, next) => {
     .then((item) => {
       // Check if the logged-in user is the owner
       if (item.owner.toString() !== userId) {
-        next(new ForbiddenError("You are not authorized to delete this item"));
+        return next(new ForbiddenError("You are not authorized to delete this item"));
       }
 
       // If authorized, delete the item
@@ -57,7 +57,7 @@ const deleteClothingItem = (req, res, next) => {
         next(new BadRequestError("Invalid item ID"));
       }
       if (err.name === "DocumentNotFoundError" || "TypeError") {
-        next(new NotFoundError("Item not found"));
+        return next(new NotFoundError("Item not found"));
       }
       next(err);
     });
@@ -74,7 +74,7 @@ const likeItem = (req, res, next) => {
   )
     .then((updatedItem) => {
       if (!updatedItem) {
-        next(new NotFoundError("Item not found"));
+        return next(new NotFoundError("Item not found"));
       }
       return res.send(updatedItem);
     })

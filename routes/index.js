@@ -19,9 +19,7 @@ router.use("/items", clothingRouter);
 
 // Handling non-existent resources
 router.use((req, res, next) => {
-  if (res.status === 404) {
-    next(new NotFoundError("Router not found"));
-  }
+  next(new NotFoundError("Router not found"));
 });
 
 module.exports = router;
