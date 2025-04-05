@@ -43,7 +43,9 @@ const deleteClothingItem = (req, res, next) => {
     .then((item) => {
       // Check if the logged-in user is the owner
       if (item.owner.toString() !== userId) {
-        return next(new ForbiddenError("You are not authorized to delete this item"));
+        return next(
+          new ForbiddenError("You are not authorized to delete this item")
+        );
       }
 
       // If authorized, delete the item
@@ -54,12 +56,12 @@ const deleteClothingItem = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
-        next(new BadRequestError("Invalid item ID"));
+        return next(new BadRequestError("Invalid item ID"));
       }
-      if (err.name === "DocumentNotFoundError" || "TypeError") {
+      if (err.name === "DocumentNotFoundError" || err instanceof TypeError) {
         return next(new NotFoundError("Item not found"));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -98,16 +100,19 @@ const dislikeItem = (req, res, next) => {
   )
     .then((updatedItem) => {
       if (!updatedItem) {
-        next(new NotFoundError("Item not found"));
+        return next(new NotFoundError("Item not found"));
       }
       return res.send(updatedItem);
     })
     .catch((err) => {
+      console.error(err);
       if (err.name === "CastError") {
-        next(new BadRequestError("Invalid item ID"));
-      } else {
-        next(err);
+        return next(new BadRequestError("Invalid item ID"));
       }
+      if (err.name === "DocumentNotFoundError" || err instanceof TypeError) {
+        return next(new NotFoundError("Item not found"));
+      }
+      return next(err);
     });
 };
 
